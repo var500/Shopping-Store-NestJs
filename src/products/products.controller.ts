@@ -7,12 +7,12 @@ export class ProductsController {
     constructor(private readonly productsService: ProductsServices) { }
 
     @Post('add')
-    addProduct(
+    async addProduct(
         @Body('title') prodTitle: string,
         @Body('desc') prodDesc: string,
         @Body('price') prodPrice: number
-    ): any {
-        const generatedId = this.productsService.insertProduct(
+    ){
+        const generatedId = await this.productsService.insertProduct(
             prodTitle,
             prodDesc,
             prodPrice
@@ -21,29 +21,30 @@ export class ProductsController {
     }
 
     @Get()
-    getAllProducts() {
-        return this.productsService.getProducts();
+    async getAllProducts() {
+        const products = await this.productsService.getProducts();
+        return products;
     }
 
     @Get(':id')
-    getProduct(@Param('id') prodId: string) {
+    async getProduct(@Param('id') prodId: string) {
         return this.productsService.getSingleProduct(prodId)
     }
 
     @Patch(':id')
-    updateProduct(
+    async updateProduct(
         @Param('id') prodId: string,
         @Body('title') prodTitle: string,
         @Body('desc') prodDesc: string,
         @Body('price') prodPrice: number
-    ):{error:boolean,message:string} {
-        this.productsService.updateProduct(prodId,prodTitle,prodDesc,prodPrice);
+    ) {
+        await this.productsService.updateProduct(prodId,prodTitle,prodDesc,prodPrice);
         return{error:false,message:"Data Updated successfully"}
     }
 
     @Delete(':id')
-    deleteProduct(@Param('id') prodId:string){
-        this.productsService.deleteProduct(prodId);
-        return{error:false,message:"Data Deleted successfully"}
+    async deleteProduct(@Param('id') prodId:string){
+        await this.productsService.deleteProduct(prodId);
+        return{error:false,productId:prodId,message:"Data Deleted successfully"}
     }
 }
